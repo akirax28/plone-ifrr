@@ -1,0 +1,49 @@
+version: "3"
+services:
+  traefik:
+    image: library/traefik:latest
+    command: --docker --docker.swarmmode --docker.domain=traefik --docker.watch --web
+    ports:
+      - "80:80"
+      - "8080:8080"
+    networks:
+      - traefik-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+  instance:
+    image: library/plone:latest
+    hostname: plone
+    networks:
+      - traefik-net
+      - zeo-net
+    environment:
+      - ZEO_ADDRESS=zeo:8080
+    deploy:
+      replicas: 2
+      labels:
+        traefik.docker.network: traefik-net
+        traefik.port: 8080
+        traefik.frontend.rule: Host:plone.traefik
+        traefik.backend.loadbalancer.method: drr
+  zeo:
+    hostname: zeo
+    image: library/plone:latest
+    command: zeo
+    volumes:
+      - zeo-data:/data
+    networks:
+      - zeo-net
+    deploy:
+      mode: global
+
+volumes:
+    zeo-data:
+
+networks:
+    zeo-net:
+    traefik-net:
