@@ -26,4 +26,4 @@ services:
     - data:/data
 
 volumes:
-  data:/data
+  data:
