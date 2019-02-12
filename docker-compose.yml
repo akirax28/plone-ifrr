@@ -30,8 +30,8 @@ services:
         traefik.port: 8080
         traefik.frontend.rule: Host:plone.traefik
         traefik.backend.loadbalancer.method: drr
-     volumes:
-      - /data/plone:/usr/local/Plone
+  #   volumes:
+  #    - /data/plone:/usr/local/Plone
   zeo:
     hostname: zeo
     image: library/plone:latest
